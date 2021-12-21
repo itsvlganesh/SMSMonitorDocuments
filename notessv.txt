@@ -1,0 +1,49 @@
+docker exec -it smsmonitorcontv3 /bin/bash
+docker ps
+docker run -it -p 80:80 --name smsmonitorcontv3 -d itsvlganesh/smsmonitorv2
+docker run -it -p 80:80 --name smsmonitorcontv3 -d itsvlganesh/smsmonitorv2 /opt/tomcat/bin/catalina.sh run (To start tomcat directly)
+docker push itsvlganesh/smsmonitorv2
+docker commit smsmonitorcontv2 itsvlganesh/smsmonitorv2
+docker cp C:/Users/S/Documents/SMSMonitor.war smsmonitorcontv1:/opt/tomcat/webapps
+docker images
+docker pull ubuntu:latest
+
+D:\dockertomcat\docker-tomcat9>docker cp D:\dockertomcat\Mydocs\index.jsp smsmonitorcontv3:/opt/tomcat/webapps/ROOT/
+D:\dockertomcat\docker-tomcat9>docker cp D:\dockertomcat\Mydocs\logo.png smsmonitorcontv3:/opt/tomcat/webapps/ROOT/
+D:\dockertomcat\docker-tomcat9>docker cp D:\dockertomcat\Mydocs\favicon.png smsmonitorcontv3:/opt/tomcat/webapps/ROOT/
+D:\dockertomcat\docker-tomcat9>docker cp C:\Users\S\Documents\SMSMonitor.war smsmonitorcontv3:/opt/tomcat/webapps/
+D:\dockertomcat\docker-tomcat9>docker cp C:\Users\S\Documents\SMS_Service.war smsmonitorcontv3:/opt/tomcat/webapps/
+
+Install JAVA & Tomcat
+apt-get udpate
+apt-get install -y git build-essential curl wget software-properties-common
+apt-get install openjdk-8-jdk
+
+URL: https://www.digitalocean.com/community/tutorials/how-to-install-apache-tomcat-8-on-ubuntu-16-04
+ groupadd tomcat
+ useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat
+wget --quiet --no-cookies  https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.56/bin/apache-tomcat-9.0.56.tar.gz -O /tmp/tomcat.tgz && tar xzvf /tmp/tomcat.tgz -C /opt && mv /opt/apache-tomcat-9.0.56 /opt/tomcat
+cd /opt/tomcat
+chgrp -R tomcat /opt/tomcat
+chmod -R g+r conf
+chmod g+x conf
+chown -R tomcat webapps/ work/ temp/ logs/
+vi /opt/tomcat/conf/tomcat-users.xml
+<tomcat-users . . .>
+    <user username="admin" password="password" roles="manager-gui,admin-gui"/>
+</tomcat-users>
+
+Configure tomcat to listen port 80 on Linux & ubuntu, becuase port less than 1024 or 1000 are secure ports
+https://www.baeldung.com/tomcat-change-port
+https://serverfault.com/questions/889122/how-to-get-tomcat-9-to-work-with-authbind-to-bind-to-port-80
+   1  ufw allow 8080
+    8  vi tomcat-users.xml
+    0  cd /opt/tomcat/conf/
+   31  vi server.xml   -- change port from 8080 to 80
+   32  apt-get install authbind
+   41  touch /etc/authbind/byport/80; chmod 500 /etc/authbind/byport/80; chown tomcat /etc/authbind/byport/80
+   42  cd ..
+   43  cd bin
+   44  vi setenv.sh   --CATALINA_OPTS="-Djava.net.preferIPv4Stack=true"
+   45  vi startup.sh   ---exec authbind --deep "$PRGDIR"/"$EXECUTABLE" start "$@"
+   50  sh startup.sh or sh catalina.sh run
